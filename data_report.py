@@ -9,6 +9,8 @@ import time
 import PySimpleGUI as sg
 from operator import itemgetter 
 from datetime import datetime
+from tkinter import *
+from tkinter import messagebox
 
 def process_data(path):
     file = open(path, newline='') #can put any file
@@ -48,10 +50,23 @@ def process_data(path):
             tempTime.append((data[i][0], data[i][2]))
     return masterList
 
-def main():
-    dataL = process_data("data.csv")
-    for x in dataL:
+root = Tk()
+
+myLabelS = Label(root, text="Please enter the name of a csv file. \n Do NOT include .csv")
+myLabelS.pack()
+
+myEntry = Entry(root, width = 50, borderwidth = 10)
+myEntry.pack()
+myEntry.insert(0, "Enter file name here")
+
+def myClick():
+    fromBox = "The file name upon click is read as: " + myEntry.get()
+    myLabel = Label(root, text=fromBox)
+    myLabel.pack()
+    for x in process_data(myEntry.get()):
         print(x)
 
-if __name__ == "__main__":
-    main()
+myButton = Button(root, text="Click, Me", padx = 50, pady = 50, command = myClick)
+myButton.pack()
+root.mainloop()
+
