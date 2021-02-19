@@ -9,6 +9,8 @@ import time
 import PySimpleGUI as sg
 from operator import itemgetter 
 from datetime import datetime
+from tkinter import *
+from tkinter import messagebox
 
 def process_data(path):
     file = open(path, newline='') #can put any file
@@ -34,7 +36,7 @@ def process_data(path):
     #print(dateCurr)
     tempTime = list()
     masterList = list()
-    masterList.append(['Date', 'Minimum Temperature', 'Maximum Temperature'])
+    # no longer needed masterList.append(['Date', 'Minimum Temperature', 'Maximum Temperature'])
 
     for i in range(sizeData):
         if data[i][3] == dateCurr:
@@ -46,12 +48,41 @@ def process_data(path):
             tempTime.clear()
             dateCurr = data[i][3] #set new date
             tempTime.append((data[i][0], data[i][2]))
+            
+    for x in masterList:
+        print(x)
     return masterList
 
-def main():
-    dataL = process_data("data.csv")
-    for x in dataL:
-        print(x)
+def write_newFile(list):
+    with open('results.csv', 'w', newline="") as resultFile:
+        writer = csv.writer(resultFile)
+        writer.writerow(['Date', 'Minimum Temperature', 'Time of Min', 'Maximum Tempature', 'Time of Max'])
+        for x in list:
+             writer.writerow([x[0], (x[1])[0], (x[1])[1], (x[2])[0], (x[2])[1]])
 
-if __name__ == "__main__":
-    main()
+root = Tk()
+
+myLabelS = Label(root, text="Please enter the name of a csv file. \n Be sure to include .csv")
+myLabelS.pack()
+
+myEntry = Entry(root, width = 50, borderwidth = 10)
+myEntry.pack()
+myEntry.insert(0, "Enter file name here")
+
+def runReport():
+    filePath = myEntry.get()
+    fromBox = "The file name upon click is read as: " + filePath
+    myLabel = Label(root, text=fromBox)
+    myLabel.pack()
+    write_newFile(process_data(filePath))
+    
+    # call a method that creates a new csv file
+
+button_report = Button(root, text="Get Data", padx = 20, pady = 10, fg = "white", bg = "green", command = runReport)
+button_report.pack()
+
+button_exit = Button(root, text ="Quit Program",  padx = 20, pady = 10, fg = "white", bg = "red", command = root.quit)
+button_exit.pack()
+
+root.mainloop()
+
